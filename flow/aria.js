@@ -173,9 +173,7 @@ type ARIARole =
 
 type ARIARoleDefinitionKey =
   ARIAAbstractRole
-  | ARIARole
-  | ARIADPubRole
-  | ARIAGraphicsRole;
+  | ARIARole;
 
 type ARIANameFromSources =
   'author'

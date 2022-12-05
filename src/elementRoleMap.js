@@ -66,10 +66,32 @@ const elementRoleMap: TAriaQueryMap<
     }
   },
   get: function (key: ARIARoleRelationConcept): ?RoleSet {
-    const item = elementRoles.find(tuple => (
-      key.name === tuple[0].name && deepEqual(key.attributes, tuple[0].attributes)
-    ));
-    return item && item[1];
+    let ret: { [ARIARoleDefinitionKey]: boolean } = {};
+    for (var tuple of elementRoles) {
+      if (key.name !== tuple[0].name) {
+        continue;
+      }
+      if (!Array.isArray(key.attributes) && tuple[0].attributes === undefined) {
+        tuple[1].forEach(role => ret[role] = true);
+        continue;
+      }
+      if (Array.isArray(key.attributes)) {
+        const attrsMatch = key.attributes.every(
+          attr => Array.isArray(tuple[0].attributes) && tuple[0].attributes.some(
+            candidateAttr => attr.name === candidateAttr.name && attr.value === candidateAttr.value
+          )
+        );
+        if (attrsMatch) {
+          tuple[1].forEach(role => ret[role] = true);
+          continue;
+        }
+      }
+    }
+    const roleSet = Object.keys(ret);
+    if (roleSet.length > 0) {
+      return roleSet;
+    }
+    return;
   },
   has: function (key: ARIARoleRelationConcept): boolean {
     return !!elementRoleMap.get(key);
